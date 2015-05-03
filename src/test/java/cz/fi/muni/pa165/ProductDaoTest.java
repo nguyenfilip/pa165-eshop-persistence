@@ -1,12 +1,11 @@
 package cz.fi.muni.pa165;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
-import javax.transaction.Transactional;
+import javax.validation.ConstraintViolationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -19,6 +18,7 @@ import cz.fi.muni.pa165.dao.CategoryDaoImpl;
 import cz.fi.muni.pa165.dao.ProductDaoImpl;
 import cz.fi.muni.pa165.entity.Category;
 import cz.fi.muni.pa165.entity.Product;
+import cz.fi.muni.pa165.entity.User;
 
 
 @ContextConfiguration(classes=PersistenceSampleApplicationContext.class)
@@ -29,53 +29,36 @@ public class ProductDaoTest  extends AbstractTransactionalTestNGSpringContextTes
 	public EntityManager em;
 	
 	@Autowired
-	public ProductDaoImpl dao;
+	public ProductDaoImpl productDao;
 
 	@Autowired
 	public CategoryDaoImpl categoryDao;
 
 	
-	@Test
-	public void productDaoTest(){
-		Category c = new Category();
-		c.setName("Elektro");
-		categoryDao.create(c);
-		
+	@Test(expectedExceptions=ConstraintViolationException.class)
+	public void mimeTypeCannotBeSetWithoutImage(){
 		Product p  = new Product();
 		p.setName("LCD TV");
-		p.addCategory(c);
-		dao.create(p);
+		p.setImageMimeType("X");
+		productDao.create(p);
 		
-		
-		List<Category> categories = categoryDao.findAll();
-		System.out.println(categories.iterator().next().getProducts().size());
 	}
 	
-
-	@Test
-	public void productCategoryTest(){
-		Category c = new Category();
-		c.setName("Elektro");
-		categoryDao.create(c);
-		
+	@Test(expectedExceptions=ConstraintViolationException.class)
+	public void imageCannotBeSetWithoutMimeType(){
 		Product p  = new Product();
 		p.setName("LCD TV");
-		dao.create(p);
-		
-		em.flush();
-		em.clear();
-//		
-////		c = categoryDao.findById(c.getId());
-//		p = dao.findById(p.getId());
-		dao.update(p);
-		p.addCategory(c);
-		
-		
-		
-		em.flush();
-		em.clear();
-		
-		List<Category> categories = categoryDao.findAll();
-		System.out.println(categories.iterator().next().getProducts().size());
+		p.setImage(new byte[]{});
+		productDao.create(p);
 	}
+	
+	@Test	
+	public void imageCanBeSetWithMimeType(){
+		Product p  = new Product();
+		p.setName("LCD TV");
+		p.setImageMimeType("X");
+		p.setImage(new byte[]{});
+		productDao.create(p);
+	}
+
 }

@@ -23,7 +23,10 @@ import javax.persistence.OrderBy;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import cz.fi.muni.pa165.validation.AllOrNothing;
+
 @Entity
+@AllOrNothing(members={"image", "imageMimeType"})
 public class Product {
 	
 	@Id

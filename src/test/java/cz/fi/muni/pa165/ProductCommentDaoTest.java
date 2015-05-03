@@ -10,6 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import cz.fi.muni.pa165.dao.ProductCommentDao;
@@ -36,33 +37,34 @@ public class ProductCommentDaoTest  extends AbstractTransactionalTestNGSpringCon
 	@Autowired
 	public ProductCommentDao productCommentDao;
 	
+	
 	@Test
-	public void productDaoTest(){
-		Product product = new Product();
-		product.setName("LG TV X2");
-		User user = new User();
-		user.setEmail("Filip@Filip.cz");
-		user.setGivenName("Martin");
-		user.setSurname("Marek");
-		user.setJoinedDate(new Date());
+	public void userAndProductGetComment(){
+		User u= UserDaoTest.getSimpleUser();
+		userDao.create(u);
 		
-		productDao.create(product);
-		userDao.create(user);
+		Product p = new Product();
+		p.setName("LG TV");
+		
+		productDao.create(p);
 		
 		ProductComment comment = new ProductComment();
 		comment.setText("Ahoj!");
-		comment.setProduct(product);
-		comment.setUser(user);
+		comment.setProduct(p);
+		comment.setUser(u);
 		comment.setCreated(new Date());
 		
 		productCommentDao.create(comment);
-	
+		
+		em.flush();
 		em.clear();
 		
-		User u = userDao.findUserByEmail("Filip@Filip.cz");
-		System.out.println(u.getComments().size());
+		User foundUser = userDao.findUserByEmail(u.getEmail());
+		Product foundProduct = productDao.findById(p.getId());
 		
-		Product p = productDao.findById(product.getId());
-		System.out.println(p.getComments().size());
+		Assert.assertEquals(foundUser.getComments().get(0), comment);
+		Assert.assertEquals(foundProduct.getComments().get(0), comment);
+		
 	}
+	
 }
