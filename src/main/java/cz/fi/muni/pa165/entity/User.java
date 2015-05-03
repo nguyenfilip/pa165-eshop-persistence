@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,28 +19,29 @@ import javax.validation.constraints.Pattern;
 
 @Entity
 //In Derby, its forbiden to 'USER' is reserved keyword, we need to rename table 
-@Table(name="USERS")
+@Table(name="Users")
 public class User {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
-	
 	private String passwordHash;
 	
-	@Column(nullable=false)
-	
+	@Column(nullable=false,unique=true)
 	@Pattern(regexp=".+@.+\\....?")
+	@NotNull
 	private String email;
-	private String firstName;
-	private String lastName;
+	@NotNull
+	private String givenName;
+	@NotNull
+	private String surname;
+	
+	@Pattern(regexp="\\+?\\d+")
 	private String phone;
 	
+	@NotNull
 	@Temporal(TemporalType.DATE)
 	private Date joinedDate;
-	
-	@ElementCollection
-	private List<Address> addresses = new ArrayList<Address>();
-	
+
 	@OneToMany(mappedBy="user")
 	private List<ProductComment> comments = new ArrayList<>();
 
@@ -49,19 +49,12 @@ public class User {
 		return id;
 	}
 
-
-	public List<Address> getAddresses() {
-		return addresses;
-	}
-
-
-	public void setAddresses(List<Address> addresses) {
-		this.addresses = addresses;
-	}
-
-
 	public List<ProductComment> getComments() {
 		return Collections.unmodifiableList(comments);
+	}
+	
+	protected void addComment(ProductComment c) {
+		comments.add(c);
 	}
 
 	public String getPasswordHash() {
@@ -80,21 +73,26 @@ public class User {
 		this.email = email;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	
+	public String getGivenName() {
+		return givenName;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+
+	public void setGivenName(String givenName) {
+		this.givenName = givenName;
 	}
 
-	public String getLastName() {
-		return lastName;
+
+	public String getSurname() {
+		return surname;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+
+	public void setSurname(String surname) {
+		this.surname = surname;
 	}
+
 
 	public String getPhone() {
 		return phone;

@@ -1,30 +1,36 @@
 package cz.fi.muni.pa165;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.testng.annotations.Test;
 
+import cz.fi.muni.pa165.dao.UserDao;
 import cz.fi.muni.pa165.entity.User;
 
 
 @ContextConfiguration(classes=PersistenceSampleApplicationContext.class)
 @DirtiesContext(classMode=ClassMode.AFTER_EACH_TEST_METHOD)
-public class SimplePersistTest  extends AbstractTransactionalTestNGSpringContextTests
+public class UserDaoTest  extends AbstractTransactionalTestNGSpringContextTests
 {
 	
-	@PersistenceContext
-	public EntityManager em;
+	@Autowired
+	public UserDao dao;
 
 	@Test
-	public void userSave(){
-		User user = new User();
-		user.setEmail("fasdf@fasdfsd.cz");
+	public void userAdd(){
+		User u = new User();
+		u.setEmail("fff@edd.cz");
+		dao.create(u);
 		
-		em.persist(user);
+		User u2 = new User();
+		u2.setEmail("fffx@edd.cz");
+		dao.create(u2);
+		
+		User x = dao.findUserByEmail("fff@edd.cz");
+		System.out.println(x);
 	}
+	
 }
