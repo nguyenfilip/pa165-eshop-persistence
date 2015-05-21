@@ -41,7 +41,6 @@ public class ProductDaoTest  extends AbstractTransactionalTestNGSpringContextTes
 		p.setName("LCD TV");
 		p.setImageMimeType("X");
 		productDao.create(p);
-		
 	}
 	
 	@Test(expectedExceptions=ConstraintViolationException.class)
