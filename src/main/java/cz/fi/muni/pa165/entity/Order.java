@@ -30,7 +30,7 @@ public class Order {
 	
 	@OneToMany
 	@NotNull
-	private List<Product> orderItems = new ArrayList<Product>();
+	private List<OrderItem> orderItems = new ArrayList<OrderItem>();
 		
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
@@ -48,11 +48,11 @@ public class Order {
 		this.user = user;
 	}
 
-	public List<Product> getOrderItems() {
+	public List<OrderItem> getOrderItems() {
 		return Collections.unmodifiableList(orderItems);
 	}
 
-	public void addOrderItem(Product p) {
+	public void addOrderItem(OrderItem p) {
 		orderItems.add(p);
 	}
 
